@@ -19,8 +19,15 @@ from pymongo.errors import ConnectionFailure
 from bson.objectid import ObjectId
 from dotenv import load_dotenv
 
-# load credentials and configuration options from .env file
-# if you do not yet have a file named .env, make one based on the template in env.example
+MONGO_DBNAME=example
+MONGO_URI="mongodb://admin:secret@localhost:27017/example?authSource=admin&retryWrites=true&w=majority"
+
+SENTRY_DSN=https://b5052ab15a33cbbf60f0a3b988ff65d4@o4507087780249600.ingest.us.sentry.io/4507087790473216 # get by registering at https://sentrio.io and configuring new flask project there
+FLASK_APP=app.py
+FLASK_ENV=development
+GITHUB_REPO=https://github.com/your-repository-url # unnecessary for basic operations
+GITHUB_SECRET=your_github_secret # unnecessary for basic operations
+
 load_dotenv(override=True)  # take environment variables from .env.
 
 # initialize Sentry for help debugging... this requires an account on sentrio.io
@@ -35,7 +42,6 @@ sentry_sdk.init(
     # We recommend adjusting this value in production.
     profiles_sample_rate=1.0,
     integrations=[FlaskIntegration()],
-    traces_sample_rate=1.0,
     send_default_pii=True,
 )
 
@@ -43,7 +49,7 @@ sentry_sdk.init(
 app = Flask(__name__)
 
 # # turn on debugging if in development mode
-# app.debug = True if os.getenv("FLASK_ENV", "development") == "development" else False
+app.debug = True if os.getenv("FLASK_ENV", "development") == "development" else False
 
 # try to connect to the database, and quit if it doesn't work
 try:
@@ -68,48 +74,56 @@ except ConnectionFailure as e:
 def home():
     """
     Route for the home page.
-    Simply returns to the browser the content of the index.html file located in the templates folder.
+    Returns to browser the content of index.html file.
     """
     return render_template("index.html")
 
 
-@app.route("/read")
-def read():
+@app.route("/existing_reviews")
+def existing_reviews():
     """
-    Route for GET requests to the read page.
+    Route for GET requests to the existing_reviews page.
     Displays some information for the user with links to other pages.
+    Display title, author, avg rating? 
     """
-    docs = db.exampleapp.find({}).sort(
-        "created_at", -1
-    )  # sort in descending order of created_at timestamp
-    return render_template("read.html", docs=docs)  # render the read template
+    existinggroup = [
+        {"$sort": {"title": 1}},
+        {"$group": {"_id": {"title": "$title", "author": "$author"}"docs": {"$push": "$$ROOT"}}}
+    ]
+    docs = db.example.aggregate(existinggroup)
+    # sort in descending order of created_at timestamp
+    return render_template("existing_reviews.html", docs=docs)  # render the read template
 
 
-@app.route("/create")
+@app.route("/write_review")
 def create():
     """
-    Route for GET requests to the create page.
+    Route for GET requests to the write_review page.
     Displays a form users can fill out to create a new document.
     """
-    return render_template("create.html")  # render the create template
+    return render_template("write_review.html")  # render the create template
 
 
-@app.route("/create", methods=["POST"])
-def create_post():
+@app.route("/write_review", methods=["POST"])
+def write_review():
     """
-    Route for POST requests to the create page.
+    Route for POST requests to the write_review page.
     Accepts the form submission data for a new document and saves the document to the database.
     """
-    name = request.form["fname"]
-    message = request.form["fmessage"]
+    username = request.form["username"]
+    book_title = request.form["title"]
+    author = request.form["author"]
+    pages = request.form["pages"] #validate this
+    review = request.form["review"]
+    rating = request.form["rating"] #validate this
 
     # create a new document with the data the user entered
-    doc = {"name": name, "message": message, "created_at": datetime.datetime.utcnow()}
-    db.exampleapp.insert_one(doc)  # insert a new document
+    doc = {"username": username, "book_title": book_title, "author": author, "pages": pages, "rating": rating, "review": review, "created_at": datetime.datetime.utcnow()}
+    db.example.insert_one(doc)  # insert a new document 
 
     return redirect(
-        url_for("read")
-    )  # tell the browser to make a request for the /read route
+        url_for("existing_reviews")
+    )  # tell the browser to make a request for /existing_reviews route
 
 
 @app.route("/edit/<mongoid>")

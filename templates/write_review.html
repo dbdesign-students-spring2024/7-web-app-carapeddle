@@ -1,0 +1,27 @@
+{% extends 'base.html' %} {% block container %}
+<h2>Review a Book!</h2>
+<p>Create a new record in the MongoDB database collection.</p>
+<form method="POST" action="{{ url_for('create_post') }}">
+  <p>Username: <input type="text" id="username" name="username" /><br /></p>
+  <p>Book Title: <input type="text" id="title" name="title" /><br /></p>
+  <p>Author Name: <input type="text" id="author" name="author" /><br /></p>
+  <p>Rating: <input type="radio" id="five_stars" name="rating" value="5">
+    <label for="five_stars">*****</label><br>
+    <input type="radio" id="four_stars" name="rating" value="4">
+    <label for="four_stars">****</label><br>
+    <input type="radio" id="three_stars" name="rating" value="3">
+    <label for="three_stars">***</label><br>
+    <input type="radio" id="two_stars" name="rating" value="2">
+    <label for="two_stars">**</label><br>
+    <input type="radio" id="one_star" name="rating" value="1">
+    <label for="one_star">*</label><br>
+    <br />
+  </p>
+  
+  <textarea type="text" id="review" name="review" placeholder="Message"></textarea>
+  <p>
+    <a href="{{ url_for('existing_reviews')}}">Cancel</a>
+    <input type="submit" name="post-btn" value="Post" />
+  </p>
+</form>
+{% endblock %}
