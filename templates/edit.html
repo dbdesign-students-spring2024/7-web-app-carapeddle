@@ -1,14 +1,39 @@
 {% extends 'base.html' %} {% block container %}
-<h2>Update</h2>
+<h2>Edit Review</h2>
 <p>Edit a record in the MongoDB database collection.</p>
+{% with messages = get_flashed_messages() %}
+    {% if messages %}
+        <ul>
+            {% for message in messages %}
+                <li>{{ message }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+{% endwith %}
 <form method="POST" action="{{ url_for('edit_post', mongoid=mongoid) }}">
   <p>
-    Your name:
-    <input type="text" id="fname" name="fname" value="{{doc.name}}" /><br />
+    Username:
+    <input type="text" id="username" name="username" value="{{doc.username}}" /><br />
   </p>
+
+  <p>Book Title: <input type="text" id="title" name="title" value="{{doc.title}}" /><br /></p>
+  <p>Author Name: <input type="text" id="author" name="author" value="{{doc.author}}" /><br /></p>
+  <p>Rating: <input type="radio" id="five_stars" name="rating" value="5">
+    <label for="five_stars">*****</label><br>
+    <input type="radio" id="four_stars" name="rating" value="4">
+    <label for="four_stars">****</label><br>
+    <input type="radio" id="three_stars" name="rating" value="3">
+    <label for="three_stars">***</label><br>
+    <input type="radio" id="two_stars" name="rating" value="2">
+    <label for="two_stars">**</label><br>
+    <input type="radio" id="one_star" name="rating" value="1">
+    <label for="one_star">*</label><br>
+    <br />
+  </p>
+
   <p>
-    Message:
-    <textarea id="fmessage" name="fmessage">{{doc.message}}</textarea>
+    Review:
+    <textarea id="review" name="review">{{doc.review}}</textarea>
   </p>
   <p>
     <a href="{{ url_for('existing_reviews')}}">Cancel</a>

@@ -2,10 +2,12 @@
 
 {% block container %}
 <h2>Welcome!</h2>
-<p>Welcome to PageTurner!
-    <ul>
-        <li><a href="{{ url_for('existing_reviews')}}">this page displays information on existing reviews from a MongoDB collection</a></li>
-        <li><a href="{{ url_for('write_review')}}">this page allows users to submit a book review that creates a new record in a MongoDB collection</a></li>
-    </ul>
-</p>
+<p>Welcome to PageTurner!</p>
+<ul>
+    <li><a href="{{ url_for('existing_reviews')}}">this page displays information on existing reviews from a MongoDB collection</a></li>
+    <li><a href="{{ url_for('write_review')}}">this page allows users to submit a book review that creates a new record in a MongoDB collection</a></li>
+    <li><a href="{{ url_for('register')}}">this page allows user to register for an account</a></li>
+    <li><a href="{{ url_for('login')}}">this page allows users to login</a></li>
+
+</ul>
 {% endblock %}
