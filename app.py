@@ -21,16 +21,6 @@ from pymongo.errors import ConnectionFailure
 from bson.objectid import ObjectId
 from dotenv import load_dotenv
 
-'''
-# Connect to MongoDB
-client = pymongo.MongoClient("mongodb://class-mongodb.cims.nyu.edu:27017/")  
-db = client["cep454"]  
-
-
-# Create a new collection
-collection_name = "book_reviews" 
-collection = db[collection_name]
-'''
 
 #MONGO_DBNAME=cep454
 #MONGO_URI=mongodb://cep454:Yt6CP6he@class-mongodb.cims.nyu.edu:27017/cep454?authSource=cep454&retryWrites=true&w=majority
@@ -48,8 +38,6 @@ load_dotenv(override=True)  # take environment variables from .env.
 # delete this if not using sentry.io
 
 import sentry_sdk
-
-
 
 sentry_sdk.init(
     dsn=os.getenv("SENTRY_DSN"),
@@ -207,17 +195,28 @@ def protected():
     flash('Logged in as: ' + flask_login.current_user.id)
     return redirect(url_for('existing_reviews'))
 
-@app.route('/logout')
+@app.route("/logout", methods=["GET", "POST"])
 def logout():
     '''
     Defines view to clear session and log user out
     '''
-    flask_login.logout_user()
-    return redirect(url_for('login'))
+    
+    if flask.request.method == "POST":
+        email = flask.request.form['email']
+        user = users.get(email)
+        if user:
+            user_obj = User(email)
+            flask_login.logout_user()
+            flash('Logged Out')
+            return redirect(url_for('login'))
+    else:
+        return render_template("logout.html")
+    flask_login.logout_user(email)
+        
 
 @login_manager.unauthorized_handler
 def unauthorized_handler():
-    return 'Unauthorized', 401
+    return redirect(url_for('register'))
 
 
 
@@ -247,11 +246,13 @@ def existing_reviews():
 
 
 @app.route("/write_review")
+@flask_login.login_required
 def write():
     """
     Route for GET requests to the write_review page.
     Displays a form users can fill out to create a new document.
     """
+    
     return render_template("write_review.html")  # render the write_review template
 
 
@@ -276,13 +277,61 @@ def write_review():
     if rating not in valid_ratings:
         return "Invalid rating input. Please select a valid rating."
 
+    user_id = flask_login.current_user.id
+
     # create a new document with the data the user entered
-    doc = {"username": username, "title": title, "author": author, "pages": pages, "rating": rating, "review": review, "created_at": datetime.datetime.utcnow(),}
+    doc = {"user_id": flask_login.current_user.id,"username": username, "title": title, "author": author, "pages": pages, "rating": rating, "review": review, "created_at": datetime.datetime.utcnow(), "comments":[]}
     db.book_reviews.insert_one(doc)  # insert a new document 
 
     return redirect(
         url_for("existing_reviews")
     )  # tell the browser to make a request for /existing_reviews route
+
+
+@app.route("/comment/<mongoid>")
+def get_comment(mongoid):
+    """
+    Route for GET requests to the comment page.
+    Displays a form users can fill out to comment on an existing record.
+
+    Parameters:
+    mongoid (str): The MongoDB ObjectId of the record to be commented on.
+    """
+    doc = db.book_reviews.find_one({"_id": ObjectId(mongoid)})
+    return render_template(
+        "comment.html", mongoid=mongoid, doc=doc
+    )
+
+@app.route("/comment/<mongoid>", methods=["POST"])
+def comment(mongoid):
+    """
+    Route for POST requests to the comment page.
+    Any user can comment
+    
+    Parameters:
+    mongoid (str): The MongoDB ObjectId of the record to be commented on.
+    """
+    doc = db.book_reviews.find_one({"_id": ObjectId(mongoid)})
+
+    commenter_username = request.form["commenter_username"]
+    usercomment = request.form["usercomment"]
+
+    new_comment = {
+        "commenter_id": flask_login.current_user.id,
+        "commenter_username": commenter_username, 
+        "usercomment": usercomment, 
+        "commented_at": datetime.datetime.utcnow(),
+    }
+
+    db.book_reviews.update_one(
+        {"_id": ObjectId(mongoid)},
+        {"$push": {"comments": new_comment}}
+    )
+    
+
+    flash('Commented')
+    return redirect(url_for("existing_reviews"))  # tell the browser to make a request for the /existing_reviews route
+
 
 
 @app.route("/edit/<mongoid>")
@@ -319,7 +368,6 @@ def edit_post(mongoid):
         flash('You do not have permission to edit this post.')
         return redirect(url_for('existing_reviews'))
     
-
     username = request.form["username"]
     title = request.form["title"]
     author = request.form["author"]
@@ -338,6 +386,7 @@ def edit_post(mongoid):
     
 
     doc = {
+        "user_id": flask_login.current_user.id,
         "username": username, 
         "title": title, 
         "author": author, 
@@ -365,10 +414,15 @@ def delete(mongoid):
     Parameters:
     mongoid (str): The MongoDB ObjectId of the record to be deleted.
     """
-    db.book_reviews.delete_one({"_id": ObjectId(mongoid)})
-    return redirect(
-        url_for("existing_reviews")
-    )  # tell the web browser to make a request for the /existing_reviews route.
+    doc = db.book_reviews.find_one({"_id": ObjectId(mongoid)})
+    if doc['user_id'] != flask_login.current_user.id:
+        flash('You do not have permission to delete this post.')
+        return redirect(url_for('existing_reviews'))
+    else:
+        db.book_reviews.delete_one({"_id": ObjectId(mongoid)})
+        return redirect(
+            url_for("existing_reviews")
+        )  # tell the web browser to make a request for the /existing_reviews route.
 
 
 @app.route("/webhook", methods=["POST"])

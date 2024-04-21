@@ -15,21 +15,40 @@
             <br/>
         </p>
         <p>
-            {{doc.title}}
+            <strong>Title:</strong> {{ doc.title }}
         </p>
         <p>
-            {{doc.author}}
+            <strong>Author:</strong> {{ doc.author }}
         </p>
         <p>
-            {{doc.pages}}
+            <strong>Pages:</strong> {{ doc.pages }}
         </p>
         <p>
-            {{doc.rating}}
+            <strong>Rating:</strong> {{ doc.rating }}
         </p>
         <p>
-            {{ doc.review }}
+            <strong>Review:</strong> {{ doc.review }}
         </p>
-            
+
+        
+        <div class = "comments">
+            <h3>Comments</h3>
+            {% if doc.comments %}
+                {% for comment in doc.comments %}
+                    <div class="comment">
+                        <p><strong>Comment by:</strong> {{ comment.commenter_username }} at {{ comment.commented_at }}</p>
+                        <p>{{ comment.usercomment }}</p>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <p>No comments yet.</p>
+            {% endif %}
+            <form action="{{ url_for('comment', mongoid=doc._id) }}" method="POST">
+                <input type="text" name="commenter_username" placeholder="Your Username" required>
+                <textarea name="usercomment" placeholder="Your Comment" required></textarea>
+                <button type="submit">Submit Comment</button>
+            </form>
+        </div>
     </div>
     {%endfor%}
 </p>

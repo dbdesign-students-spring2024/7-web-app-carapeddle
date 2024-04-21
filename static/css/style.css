@@ -1,7 +1,51 @@
+body {
+  font-family: Arial, sans-serif;
+  font-size: 16px;
+  line-height: 1.6;
+}
+
+h1, h2, h3 {
+  font-weight: bold;
+}
+
+body {
+  color: rgb(229, 181, 255);
+  background-color: rgb(109, 109, 188);
+}
+
+/* Layout */
 .container {
-  border: 2px solid;
-  width: 50%;
+  width: 60%;
   margin: 0 auto;
+  padding: 20px;
+  border: 1px solid #473357;
+  border-radius: 5px;
+  background-color: #efcbff;
+}
+
+/* Buttons */
+button {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  background-color: #535071;
+  color: #ffffff;
+  cursor:grab;
+  transition: background-color 0.3s ease;
+}
+
+button:hover {
+  background-color: #2c3e51;
+}
+
+/* Forms */
+input[type="text"],
+textarea {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
 }
 
 header,
@@ -16,9 +60,6 @@ main {
   margin-bottom: 5px;
 }
 
-p.post {
-  font-size: 12px;
-}
 
 footer {
   margin-bottom: 5px;
