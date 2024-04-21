@@ -2,15 +2,26 @@ body {
   font-family: Arial, sans-serif;
   font-size: 16px;
   line-height: 1.6;
+  color: rgb(29, 25, 32);
+  background-color: rgb(110, 80, 118);
+}
+
+
+form { 
+  margin: auto; 
+  width: auto; 
+  padding: 20px; 
+  border: 1px solid #000000; 
+}
+
+input[type="text"], input[type="password"], input[type="submit"] { 
+  width: 100%; 
+  padding: 10px; 
+  margin-top: 10px;
 }
 
 h1, h2, h3 {
   font-weight: bold;
-}
-
-body {
-  color: rgb(229, 181, 255);
-  background-color: rgb(109, 109, 188);
 }
 
 /* Layout */
@@ -18,9 +29,26 @@ body {
   width: 60%;
   margin: 0 auto;
   padding: 20px;
-  border: 1px solid #473357;
+  border: 1px solid #a183b9;
   border-radius: 5px;
   background-color: #efcbff;
+}
+
+.comments {
+  background-color: #ffffff;
+  padding: 15px;
+  margin-top: 20px;
+  border: 1px solid #ddd; /* Border around the comment section */
+  border-radius: 5px;
+}
+
+.comment {
+  padding: 10px;
+  margin-bottom: 10px;
+  background-color: #f9f9f9;
+  border: 1px solid #ddd; /* Border around each comment */
+  border-radius: 5px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1); /* Add shadow for depth */
 }
 
 /* Buttons */
@@ -28,23 +56,23 @@ button {
   padding: 10px 20px;
   border: none;
   border-radius: 5px;
-  background-color: #535071;
+  background-color: #454360;
   color: #ffffff;
   cursor:grab;
   transition: background-color 0.3s ease;
 }
 
 button:hover {
-  background-color: #2c3e51;
+  background-color: #674a6b;
 }
 
 /* Forms */
-input[type="text"],
+
 textarea {
-  width: 100%;
+  width: auto;
   padding: 10px;
   margin-bottom: 10px;
-  border: 1px solid #ccc;
+  border: 1px solid #000000;
   border-radius: 5px;
 }
 

@@ -1,4 +1,7 @@
-{% extends 'base.html' %} {% block container %}
+{% extends 'base.html' %} 
+
+{% block container %}
+
 <h2>Review a Book!</h2>
 <p>Create a new record in the MongoDB database collection.</p>
 <form method="POST" action="{{ url_for('write_review') }}">

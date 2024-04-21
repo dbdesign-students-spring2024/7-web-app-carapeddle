@@ -279,6 +279,7 @@ def write_review():
 
     user_id = flask_login.current_user.id
 
+
     # create a new document with the data the user entered
     doc = {"user_id": flask_login.current_user.id,"username": username, "title": title, "author": author, "pages": pages, "rating": rating, "review": review, "created_at": datetime.datetime.utcnow(), "comments":[]}
     db.book_reviews.insert_one(doc)  # insert a new document 
@@ -335,38 +336,37 @@ def comment(mongoid):
 
 
 @app.route("/edit/<mongoid>")
+@flask_login.login_required
 def edit(mongoid):
     """
     Route for GET requests to the edit page.
     Displays a form users can fill out to edit an existing record.
-    User must have published origial review to be able to edit
 
     Parameters:
     mongoid (str): The MongoDB ObjectId of the record to be edited.
     """
+   
+    
     doc = db.book_reviews.find_one({"_id": ObjectId(mongoid)})
-    if doc['user_id'] != flask_login.current_user.id:
-        flash('You do not have permission to edit this post.')
-        return redirect(url_for('existing_reviews'))
+    user_id = flask_login.current_user.id
     return render_template(
         "edit.html", mongoid=mongoid, doc=doc
     )  # render the edit template
 
 
 @app.route("/edit/<mongoid>", methods=["POST"])
+@flask_login.login_required
 def edit_post(mongoid):
     """
     Route for POST requests to the edit page.
     Accepts the form submission data for the specified document and updates the document in the database.
-    User must have published origial review to be able to edit
     
     Parameters:
     mongoid (str): The MongoDB ObjectId of the record to be edited.
     """
     doc = db.book_reviews.find_one({"_id": ObjectId(mongoid)})
-    if doc['user_id'] != flask_login.current_user.id:
-        flash('You do not have permission to edit this post.')
-        return redirect(url_for('existing_reviews'))
+    user_id = flask_login.current_user.id
+ 
     
     username = request.form["username"]
     title = request.form["title"]

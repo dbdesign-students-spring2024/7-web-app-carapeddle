@@ -1,55 +1,57 @@
 {% extends 'base.html' %}
 
 {% block container %}
-<h2>Existing Reviews</h2>
-<p>This page shows information pulled from a MongoDB database collection.
-        
-    {% for doc in docs %}
-    <div>
-        <hr class="solid">
-        <p class="post">
-            Posted by {{doc.username}} at {{ doc.created_at}}
+<div class="container">
+    <h2>Existing Reviews</h2>
+    <div>This page shows information pulled from a MongoDB database collection.
             
-            <br/>
-            <a href="{{ url_for('edit',mongoid=doc._id)}}">Edit</a> | <a href="{{ url_for('delete',mongoid=doc._id)}}">Delete</a>
-            <br/>
-        </p>
-        <p>
-            <strong>Title:</strong> {{ doc.title }}
-        </p>
-        <p>
-            <strong>Author:</strong> {{ doc.author }}
-        </p>
-        <p>
-            <strong>Pages:</strong> {{ doc.pages }}
-        </p>
-        <p>
-            <strong>Rating:</strong> {{ doc.rating }}
-        </p>
-        <p>
-            <strong>Review:</strong> {{ doc.review }}
-        </p>
+        {% for doc in docs %}
+        <div>
+            <hr class="solid">
+            <p class="post">
+                Posted by {{doc.username}} at {{ doc.created_at}}
+                
+                <br/>
+                <a href="{{ url_for('edit',mongoid=doc._id)}}">Edit</a> | <a href="{{ url_for('delete',mongoid=doc._id)}}">Delete</a>
+                <br/>
+            </p>
+            <p>
+                <strong>Title:</strong> {{ doc.title }}
+            </p>
+            <p>
+                <strong>Author:</strong> {{ doc.author }}
+            </p>
+            <p>
+                <strong>Pages:</strong> {{ doc.pages }}
+            </p>
+            <p>
+                <strong>Rating:</strong> {{ doc.rating }}
+            </p>
+            <p>
+                <strong>Review:</strong> {{ doc.review }}
+            </p>
 
-        
-        <div class = "comments">
-            <h3>Comments</h3>
-            {% if doc.comments %}
-                {% for comment in doc.comments %}
-                    <div class="comment">
-                        <p><strong>Comment by:</strong> {{ comment.commenter_username }} at {{ comment.commented_at }}</p>
-                        <p>{{ comment.usercomment }}</p>
-                    </div>
-                {% endfor %}
-            {% else %}
-                <p>No comments yet.</p>
-            {% endif %}
-            <form action="{{ url_for('comment', mongoid=doc._id) }}" method="POST">
-                <input type="text" name="commenter_username" placeholder="Your Username" required>
-                <textarea name="usercomment" placeholder="Your Comment" required></textarea>
-                <button type="submit">Submit Comment</button>
-            </form>
+            
+            <div class = "comments">
+                <h3>Comments</h3>
+                {% if doc.comments %}
+                    {% for comment in doc.comments %}
+                        <div class="comment">
+                            <p><strong>Comment by:</strong> {{ comment.commenter_username }} at {{ comment.commented_at }}</p>
+                            <p>{{ comment.usercomment }}</p>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <p>No comments yet.</p>
+                {% endif %}
+                <form action="{{ url_for('comment', mongoid=doc._id) }}" method="POST">
+                    <input type="text" name="commenter_username" placeholder="Your Username" required>
+                    <textarea name="usercomment" placeholder="Your Comment" required></textarea>
+                    <button type="submit">Submit Comment</button>
+                </form>
+            </div>
         </div>
+        {%endfor%}
     </div>
-    {%endfor%}
-</p>
+</div>
 {% endblock %}

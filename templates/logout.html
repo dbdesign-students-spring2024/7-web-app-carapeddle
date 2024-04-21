@@ -1,21 +1,11 @@
-{% extends 'base.html' %} {% block container %}
+{% extends 'base.html' %} 
+
+{% block container %}
 
 <head>
     <title>Logout</title>
-    <style>
-        body { font-family: Arial, sans-serif; }
-        form { 
-            margin: 100px auto; 
-            width: 300px; 
-            padding: 20px; 
-            border: 1px solid #ccc; 
-        }
-        input[type="text"], input[type="submit"] { 
-            width: 100%; 
-            padding: 10px; 
-            margin-top: 10px;
-        }
-    </style>
+    
+    
 </head>
 <body>
     {% with messages = get_flashed_messages() %}
@@ -29,6 +19,7 @@
     {% endwith %}
     
     <form action="/logout" method="POST">
+        <h2>Logout!</h2>
         <input type="text" name="email" id="email" placeholder="Enter Email">
         <input type="submit" value="Logout">
     </form>
